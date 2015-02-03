@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title>DataWarrior Manual</title>
+  <base href="../">
+  <link type="text/css" href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+<hr align="left" size="2" width="550">
+<h2><a name="GeneralConcepts"></a>General Concepts</h2>
+
+<hr align="left" size="2" width="550">
+<p><span class="keyword">DataWarrior</span> is a multi-purpose data analysis tool.
+It works on any kind of tabular data assuming rows to contain objects or cases and
+columns to contain associated properties and values.
+<span class="keyword">DataWarrior</span> provides interactive views to visualize data,
+to discover correlations and to extract hidden knowledge from large data sets.
+Data filters allow focusing on specific data subsets in a dynamic way.
+Chemical intelligence is woven into the program to work with chemical structures
+as easily as with numerical values. Data can be filtered on structural motives,
+views are chemistry aware, molecule properties can be predicted from chemical structures, and
+specialized cheminformatics methods explore the relationship between chemical structure
+and measured properties.
+<span class="keyword">DataWarrior</span> supports multiple files types and allows
+merging data from files with data from the clipboard or from databases.
+<span class="keyword">DataWarrior</span> is freely available for Linux, Macintosh and Windows.<br>
+This section explains general concepts and defines important keywords.</p>
+<br>
+<h3><a name="MainAndDetailViews"></a>Main View Area and Detail Area</h3>
+<p>The <span class="keyword">Main View Area</span> shows one or multiple
+<span class="keyword">Main Views</span>, everyone displaying data rows either as data table,
+in a 2- or 3-dimensional interactive chart, or in another kind of view.
+Typically, multiple <span class="keyword">Main Views</span> show the same (sub-)set of data,
+but display the data in different ways. Multiple <span class="keyword">Main Views</span>
+can coexist either stacked on top of each other
+or side by side.</p>
+<p align="center"><img src="help/img/basics/viewAreas.jpeg"></p>
+<p>Individual <span class="keyword">Main Views</span> can be maximized or closed by clicking the respective
+buttons on the view's header area. A right mouse click within the header area
+opens a popup menu allowing to create new views or to create pictures of the view.
+<span class="keyword">Main Views</span> can be moved to another position
+by dragging its header area to the middle or any edge of another view.</p>
+<p>While <span class="keyword">Main Views</span> show multiple rows, the <span class="keyword">Detail Area</span>
+displays the content of one row in detail. 
+When moving the mouse over a <span class="keyword">Main View</span> the <span class="keyword">Detail Area</span> 
+is constantly updated to reveal the details of the row or marker underneath the mouse pointer.</p>
+<br>
+<h3>Table View</h3>
+<p> The <span class="keyword">Table View</span> serves as a direct window to
+the data contained in a <span class="keyword">DataWarrior</span> file. Through it
+rows can be sorted, data of individual cells can be modified, and display options
+for individual columns can be changed. The <span class="keyword">Table View</span>
+cannot be removed nor can there be more than one <span class="keyword">Table View</span>.
+Columns may display non-alpha-numerical content like molecules or reactions. The column
+order may be changed and less important columns may be hidden. A column specific popup
+menu is accessible from the column header.
+<a href="help/views.html#TableView">More...</a></p>
+<p align="center"><img src="help/img/basics/tableView.jpeg"></p>
+
+<br>
+<h3>2D-View</h3>
+<p> This view visualizes table data in a 2-dimensional chart, e.g. as a scatter plot,
+bar or pie chart, box plot, etc. It is dynamically linked with the <span class="keyword">Detail Area</span>
+such that a mouse movement above the view updates the row's details according to the mouse 
+position. Marker colors, shapes, and sizes are customizable and may depend on 
+a column of your data. A right mouse click inside of the view reveals a popup menu
+allowing to customize view settings. The <span class="menu">xyz</span> button in the view's
+header area opens a popup with controls for assigning data columns and to dynamically zoom into each axis. 
+<a href="help/views.html#2DAnd3DViews">More...</a></p>
+<p align="center"><img src="help/img/basics/2dviews.jpeg"></p>
+<br>
+<h3>3D-View</h3>
+<p> The <b>3D-View</b> is similar to the 2D-View, however, it displays markers or bars
+in a three dimensional cartesian coordinate system. The left mouse button can be
+used to select row markers or to change the <span class="keyword">Current Row</span>. Pressing and dragging
+the right mouse button over empty space rotates the view. Pressing the same mouse button over a marker
+opens a popup menu for changing view specific settings.
+<a href="help/views.html#2DAnd3DViews">More...</a></p>
+<br>
+<h3>Form View</h3>
+<p>
+<span class="keyword">Form Views</span> present your data like a book with one page per data row.
+A <span class="keyword">Design Mode</span> allows to custom tailor the form layout and
+an <span class="keyword">Edit Mode</span> allows to directly manipulate the data shown.
+<span class="keyword">Form Views</span> are particularly useful, if some table cells reference
+html or picture detail information. Such detail information is not shown in the
+<span class="keyword">Table View</span>. Instead the <span class="keyword">Table View</span>
+displays a small number in a colored square indicating that more information is available.
+<a href="help/views.html#FormView">More...</a>
+</p>
+<p align="center"><img src="help/img/basics/formView.jpeg"></p>
+<br>
+
+<h3><a name="Filters"></a>Filters</h3>
+<p>
+Filters may hide rows from main views to temporarily focus on the remaining visible rows.
+Various filter kinds are available, but they all share certain characteristics.
+Filters always apply to all views, i.e. remove the same rows from all views at the same time.
+Filters can be inverted by selecting the inversion button. If a row is excluded by one or
+more filters, then is is not visible in any view.
+The status panel displays the number of visible rows, of the selected rows, and of all rows.
+</p>
+<p>The available filter types are:</p>
+<table class="wspace">
+  <tbody>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/sliders.jpeg"></p></td>
+      <td class="wspace"><span class="keyword">Sliders</span> filter rows based on numerical 
+      or date values. They define an allowed or forbidden data range by defining 
+      minimum and maximum values. Pressing the <span class="menu">Ctrl</span> 
+      key while dragging the slider caps reduces sensitivity by a factor of 20 
+      to allow fine-tuning.</td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/textFilter.jpeg"></p></td>
+      <td class="wspace"><span class="keyword">Text filters</span> may be used to hide rows which match or don't match 
+      a query string in a definable way. For advanced text pattern matching one 
+      may define a <a class="links" href="help/regex.html">regular expression</a> with 
+      the <span class="menu">matches regex</span> option.</td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/categories.jpeg"></p></td>
+      <td class="wspace"><b>Category</b> filters hide certain categories of the data. Rows are 
+      hidden if they don't belong to any of the checked categories. If some rows 
+      belong to multiple categories at the same time, then a &lt;multiple categories&gt; 
+      option is offered. If this is checked then rows belonging into multiple 
+      categories are kept from hiding.</td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/categoryBrowser.jpeg"></p></td>
+      <td class="wspace">A <span class="keyword">Category Browser</span> allows to quickly browse
+      through the different categories within a dataset. This can be done stepwise
+      through clicking the 'previous' and 'next' buttons or more rapidly by dragging the slider.
+	</td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/listFilter.jpeg"></p></td>
+      <td class="wspace"><b>Row List</b> filters are used to hide all
+      members of a
+      selected hitlist or all rows that do not belong to that hitlist.</td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/structureFilter.jpeg"></p></td>
+      <td class="wspace">Chemical <span class="keyword">structure filters</span> may be used to 
+      show or hide compounds with a given substructure or that are similar to a 
+      given molecule. <a href="help/chemistry.html#StructureFilter">More...</a><br>
+      </td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/sssList.jpeg"></p></td>
+      <td class="wspace">Two specialized filters allow an immediate filtering based on multiple
+      structures at once. The <span class="keyword">SSS list filters</span> run a parallel
+      sub-structure-search on multiple query structures and hides rows, whose molecules
+      don't contain any of the listed query fragments. Fragment lists can be
+      loaded from file, edited manually or combined by drag and drop.
+      </td>
+    </tr>
+    <tr>
+      <td class="wspace"><p><img src="help/img/basics/simList.jpeg"></p></td>
+      <td class="wspace"><span class="keyword">Similarity structure list filters</span> may be used to 
+      hide rows, whose molecules are not similar to any of the listed structures.
+      Any currently available descriptor may serve as similarity criterion.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Depending on the data, <span class="keyword">DataWarrior</span> shows 
+a reasonable set of default filters. One can always add more filters or remove 
+filters from the filter panel. Multiple active filters accumulate their affects, which 
+means that rows are hidden if they don't match the filter condition of at least 
+one filter.</p>
+
+<br>
+<h3><i><a name="VisibleRows"></a>Visible Rows</i></h3>
+<p> The <span class="keyword">Visible Rows</span> are those rows, which are
+currently visible in the main view area. Typically the set of <span class="keyword">
+Visible Rows</span> is a subset of all rows of the dataset. Its number is always
+displayed in the status area. The visibility of rows is primarily affected by filter
+settings. However, a visible main view may also hide some rows,
+e.g. through zooming or if the data row has empty values. This usually hides effected rows from other
+visible views as well, unless the hiding view is configured to not contribute to global
+row hiding. Main views, which are hidden behind other views, don't contribute to global row hiding.
+Thus, the number of <span class="keyword">Visible Rows</span> may change when main views change visibility.</p>
+
+<br>
+<h3><a name="SelectedRows"></a>Selected Rows</h3>
+<p>All main views except for the <span class="keyword">Form View</span> allow to select
+or deselect rows with the mouse. The row selection is shared among all views. Thus,
+when you change the row selection in one view, the selection in all other views is
+updated simultaniously. The number of (visible) selected rows is always displayed in the status area.</p>
+
+<br>
+<h3><a name="CurrentRow"></a>Current Row</h3>
+<p>With a mouse click one row can be defined as the <span class="keyword">Current Row</span>.
+As with the <span class="keyword">Selected Rows</span>, the <span class="keyword">Current Row</span>
+is shared among all views. Most views mark the <span class="keyword">Current Row</span> with a
+<b> <font color="#FF0000">red frame</font></b> or show it in <b><font color="#FF0000">red color</font></b>. 
+The <span class="keyword">Form View</span> always shows the <span class="keyword">Current Row</span>.
+Various display modes use the <span class="keyword">Current Row</span> as a reference to compare to
+when using color to show similarities or when constructing neighbourship graphs, etc.</p>
+
+<br>
+<h3><a name="RowLists"></a>Row Lists</h3>
+<p> A <span class="keyword">Row List</span> is a named subset of all rows.
+<span class="keyword">Row Lists</span> may be used for various purposes in DataWarrior,
+e.g. as subject of a filter, to affect marker sizes, shapes or colors, to highlight a group of rows,
+to permanently store a current selection, to define data subset for a data analysis method, etc.
+Defined <span class="keyword">Row Lists</span> are automatically saved within DataWarrior files.
+The <span class="menu">List</span> menu contains functionality to create and
+manipulate <span class="keyword">Row Lists</span>. You may for instance create a few
+<span class="keyword">Row Lists</span> from different sets of selected rows and afterwards
+add more rows to some of those lists with the <span class="menu">Add Selected To</span> item
+from the <span class="menu">List</span> menu. This way one may manually assign rows to self
+defined categories. Alternatively, one may add individual rows to a list by pressing the right mouse
+button on any row in any view and selecting the respective list name from the
+<span class="menu">Add Row To List</span> popup menu item.
+<br>
+The <span class="menu">Add Column From Row Lists...</span> menu creates a new table column
+that contains for every row the names of all lists, which it is a member of. This
+way list membership can be materialized and used for filtering, view customization, or
+other purposes.</p>
+<br>
+
+<h3><a name="Templates"></a>Templates</h3>
+<p> A <span class="keyword">Template</span> comprises all <span class="keyword">DataWarrior</span>
+display settings. It includes the information about existing views and their orientation,
+all view specific settings like marker colors, font sizes, shown labels etc. It contains information about active
+filters and their settings, column aliases and about the layout of existing form views.
+<span class="keyword">Templates</span> are part of a native <span class="keyword">DataWarrior</span>
+file and may also be stored as a stand-alone file to be later re-applied to another similar or updated data set.
+Templates may also be associated with a database query, such that query results are immediately shown
+in a predefined way.</p>
+
+<br>
+<p align="center">Continue with <a href="help/import.html">Loading Data</a>...</p>
+</body>
+</html>

@@ -1,0 +1,2 @@
+java -classpath ./bin:./lib/substance.jar:./lib/javaxVecmath.jar:./lib/WMF2Viewer.jar:./lib/jep.jar:./lib/commons-math-2.2.jar:./lib/batik-all.jar:./lib/xml-apis-ext.jar:./lib/opsin.jar:./lib/janino.jar:./lib/jumbo.jar com.actelion.research.datawarrior.DataWarriorLinux
+

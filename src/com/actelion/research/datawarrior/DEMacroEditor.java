@@ -1,0 +1,611 @@
+/*
+ * Copyright 2014 Actelion Pharmaceuticals Ltd., Gewerbestrasse 16, CH-4123 Allschwil, Switzerland
+ *
+ * This file is part of DataWarrior.
+ * 
+ * DataWarrior is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * DataWarrior is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with DataWarrior.
+ * If not, see http://www.gnu.org/licenses/.
+ *
+ * @author Thomas Sander
+ */
+
+package com.actelion.research.datawarrior;
+
+import info.clearthought.layout.TableLayout;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.TreeSet;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
+
+import com.actelion.research.chem.io.CompoundTableConstants;
+import com.actelion.research.datawarrior.task.AbstractTask;
+import com.actelion.research.datawarrior.task.ConfigurableTask;
+import com.actelion.research.datawarrior.task.DEMacro;
+import com.actelion.research.datawarrior.task.DEMacro.Task;
+import com.actelion.research.datawarrior.task.DEMacroListener;
+import com.actelion.research.datawarrior.task.StandardTaskFactory;
+import com.actelion.research.datawarrior.task.TaskSpecification;
+import com.actelion.research.datawarrior.task.view.ListTransferHandler;
+import com.actelion.research.table.CompoundTableEvent;
+import com.actelion.research.table.CompoundTableHitlistEvent;
+import com.actelion.research.table.CompoundTableModel;
+import com.actelion.research.table.filter.JFilterPanel;
+import com.actelion.research.table.view.CompoundTableView;
+
+public class DEMacroEditor extends JSplitPane implements ActionListener,CompoundTableConstants,CompoundTableView,
+														 DEMacroListener,ItemListener,ListDataListener {
+    private static final long serialVersionUID = 0x20130114;
+
+    private static final String COMMAND_DELETE_SELECTED = "delsel";
+    private static final String COMMAND_DELETE = "delete";
+    private static final String COMMAND_EDIT = "edit";
+
+    private static ImageIcon sPopupIcon;
+
+    private DEFrame				mParentFrame;
+    private JTree				mTree;
+    private JComboBox			mComboBoxMacro;
+    private JList				mList;
+    private ArrayList<DEMacro>	mMacroList;
+    private boolean				mItemListenerDisabled,mMacroListChangedDisabled;
+    private StandardTaskFactory	mTaskFactory;
+    private DEMacro				mCurrentMacro;
+	private JPopupMenu			mMacroPopup;
+	private JButton				mMacroPopupButton;
+
+	@SuppressWarnings("unchecked")
+	public DEMacroEditor(DEFrame parentFrame) {
+		mParentFrame = parentFrame;
+		mTaskFactory = parentFrame.getApplication().getTaskFactory();
+		TreeSet<TaskSpecification> taskSet = mTaskFactory.getTaskDictionary();
+
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Available Tasks");
+		int category = -1;
+		DefaultMutableTreeNode categoryNode = null;
+		for (TaskSpecification task:taskSet) {
+			if (category != task.getCategory()) {
+				category = task.getCategory();
+				categoryNode = new DefaultMutableTreeNode(task.getCategoryName());
+				rootNode.add(categoryNode);
+				}
+			DefaultMutableTreeNode taskNode = new DefaultMutableTreeNode(task.getTaskName());
+		    categoryNode.add(taskNode);
+			}
+		mTree = new JTree(rootNode);
+		mTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		mTree.setBackground(Color.WHITE);
+		mTree.setDragEnabled(true);
+
+		JScrollPane treePane = new JScrollPane(mTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		treePane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
+		setLeftComponent(treePane);
+
+		mComboBoxMacro = new JComboBox();
+		mMacroList = (ArrayList<DEMacro>)parentFrame.getTableModel().getExtensionData(CompoundTableConstants.cExtensionNameMacroList);
+		if (mMacroList == null) {
+			mMacroList = new ArrayList<DEMacro>();
+			parentFrame.getTableModel().setExtensionData(CompoundTableConstants.cExtensionNameMacroList, mMacroList);
+			}
+		if (mMacroList.size() == 0)
+			addNewMacro(parentFrame, null);
+		for (DEMacro m:mMacroList)
+			mComboBoxMacro.addItem(m.getName());
+		if (mComboBoxMacro.getItemCount() != 0)
+			mComboBoxMacro.setSelectedIndex(0);
+		mComboBoxMacro.addItemListener(this);
+
+		double[][] size = { {8, TableLayout.PREFERRED, 4, TableLayout.PREFERRED, 8, TableLayout.PREFERRED, TableLayout.FILL},
+							{4, TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL, 4} };
+		JPanel bp = new JPanel();
+		bp.setLayout(new TableLayout(size));
+		bp.add(new JLabel("Current Macro:", JLabel.RIGHT), "1,2");
+		bp.add(mComboBoxMacro, "3,2");
+		bp.add(createPopupMenu(), "5,1,5,3");
+
+		mList = new JList(new DefaultListModel()) {
+			private static final long serialVersionUID = 20131206L;
+
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if (getModel().getSize() == 0) {
+					Dimension size = getSize();
+					String msg = (mMacroList.size() == 0) ?
+							"<create new macro to edit>" : "<drop tasks here>";
+					FontMetrics metrics = g.getFontMetrics();
+					g.setColor(Color.GRAY);
+					g.drawString(msg, (size.width-metrics.stringWidth(msg)) / 2, (size.height+g.getFont().getSize())/2);
+					}
+				}
+			};
+		mList.setBackground(Color.WHITE);
+		mList.setDragEnabled(true);
+		mList.setTransferHandler(new ListTransferHandler() {
+			private static final long serialVersionUID = 20131209L;
+
+			// make sure we only except Strings that represent existing task names
+			@Override
+			public boolean canImport(TransferSupport support) {
+				if (!super.canImport(support))
+					return false;
+
+				if (mComboBoxMacro.getSelectedIndex() == -1)
+					return false;
+
+				try {
+					String[] taskNames = getStringData(support).split("\\n");
+					for (String taskName:taskNames)
+						if (mTaskFactory.createTask(mParentFrame, ConfigurableTask.constructTaskCodeFromName(taskName)) == null)
+							return false;
+
+					return true;
+					}
+				catch (Exception e) {
+					return false;
+					}
+				}
+
+			// we handle the task configurations in a parallel list. Keep task names and configurations in sync.
+			@Override
+			public void updateListIndexes(int[] newToOldListIndexMap) {
+				listOrderChanged(newToOldListIndexMap);
+				mParentFrame.setDirty(true);
+				}
+			} );
+		mList.setDropMode(DropMode.INSERT);
+		mList.getModel().addListDataListener(this);
+		mList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopupMenu(e.getX(), e.getY(), mList.locationToIndex(e.getPoint()));
+					}
+				}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showPopupMenu(e.getX(), e.getY(), mList.locationToIndex(e.getPoint()));
+					}
+				}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					editTask(mList.locationToIndex(e.getPoint()));
+					}
+				}
+			});
+		JScrollPane sp = new JScrollPane();
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		sp.setViewportView(mList);
+		if (mComboBoxMacro.getSelectedIndex() != -1)
+			resetListModel(mMacroList.get(mComboBoxMacro.getSelectedIndex()));
+
+		JPanel macroPanel = new JPanel();
+		macroPanel.setLayout(new BorderLayout());
+		macroPanel.add(bp, BorderLayout.NORTH);
+		macroPanel.add(sp, BorderLayout.CENTER);
+		macroPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+		setRightComponent(macroPanel);
+
+		setDividerSize(8);
+		setDividerLocation(0.4);
+		setResizeWeight(0.4);
+		setContinuousLayout(true);
+
+		enableItems();
+		}
+
+	public JPanel createPopupMenu() {
+		sPopupIcon = new ImageIcon(this.getClass().getResource("/images/popup14.png"));
+
+		JPanel mbp = new JPanel();
+		mMacroPopupButton = JFilterPanel.createButton(sPopupIcon, 16, 18, "showPopup", this);
+		mMacroPopupButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (mMacroPopup == null)
+					showMacroPopup(e);
+				}
+			});
+		mbp.add(mMacroPopupButton);
+		return mbp;
+		}
+
+	private void showMacroPopup(MouseEvent e) {
+		JButton button = (JButton)e.getSource();
+		mMacroPopup = new JPopupMenu() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void setVisible(boolean b) {
+				super.setVisible(b);
+				mMacroPopup = null;
+				}
+			};
+		mMacroPopup.add(createPopupItem("New Macro..."));
+		if (!mMacroList.isEmpty()) {
+			mMacroPopup.add(createPopupItem("Duplicate Macro"));
+			mMacroPopup.addSeparator();
+			mMacroPopup.add(createPopupItem("Rename Macro..."));
+			mMacroPopup.addSeparator();
+			mMacroPopup.add(createPopupItem("Delete Macro..."));
+			}
+		mMacroPopup.show(button.getParent(),
+							 button.getBounds().x,
+							 button.getBounds().y + button.getBounds().height);
+		}
+
+	private JMenuItem createPopupItem(String title) {
+		JMenuItem item = new JMenuItem(title);
+		item.setActionCommand(title);
+		item.addActionListener(this);
+		return item;
+		}
+
+	@Override
+	public void cleanup() {
+		mList.getModel().removeListDataListener(this);
+		}
+
+	@Override
+	public CompoundTableModel getTableModel() {
+		return mParentFrame.getTableModel();
+		}
+
+	@Override
+	public void compoundTableChanged(CompoundTableEvent e) {
+		if (e.getType() == CompoundTableEvent.cChangeExtensionData
+		 && e.getSpecifier() == DECompoundTableExtensionHandler.ID_MACRO
+		 && !mMacroListChangedDisabled) {
+			mItemListenerDisabled = true;
+			String oldSelectedItem = (String)mComboBoxMacro.getSelectedItem();
+			mComboBoxMacro.removeAllItems();
+			for (DEMacro m:mMacroList)
+				mComboBoxMacro.addItem(m.getName());
+			if (oldSelectedItem != null)
+				mComboBoxMacro.setSelectedItem(oldSelectedItem);
+			mItemListenerDisabled = false;
+			int selectedIndex = mComboBoxMacro.getSelectedIndex();
+			resetListModel(selectedIndex == -1 ? null : mMacroList.get(selectedIndex));
+			enableItems();
+			}
+		}
+
+	@Override
+	public void hitlistChanged(CompoundTableHitlistEvent e) {
+		}
+
+	public DEMacro getCurrentMacro() {
+		return mCurrentMacro;
+		}
+
+	private int getListIndex(Object item) {
+		for (int i=0; i<mList.getModel().getSize(); i++)
+			if (mList.getModel().getElementAt(i) == item)	// this is the very same and not just equal
+				return i;
+
+		return -1;
+		}
+
+	private void resetListModel(DEMacro macro) {
+		if (mCurrentMacro != macro) {
+			if (mCurrentMacro != null)
+				mCurrentMacro.removeMacroListener(this);
+	
+			mCurrentMacro = macro;
+	
+			if (mCurrentMacro != null)
+				mCurrentMacro.addMacroListener(this);
+			}
+
+		mList.setDragEnabled(macro != null);
+		DefaultListModel model = (DefaultListModel)mList.getModel();
+		model.clear();
+		if (macro != null) {
+			for (int i=0; i<macro.getTaskCount(); i++) {
+				AbstractTask task = mTaskFactory.createTask(mParentFrame, macro.getTaskCode(i));
+				if (task != null)
+					model.addElement(task.getTaskName());
+				else
+					model.addElement("<Unknown Task>");
+				}
+			}
+		}
+
+	private void listOrderChanged(int[] oldIndex) {
+		ArrayList<Task> taskList = mCurrentMacro.changeTaskOrder(oldIndex);
+		for (int i=0; i<taskList.size(); i++) {
+			DEMacro.Task task = taskList.get(i);
+			if (task.getCode() == null) {
+				String taskName = (String)mList.getModel().getElementAt(i);
+				String code = ConfigurableTask.constructTaskCodeFromName(taskName);
+				task.setCode(code);
+				createTaskConfigurationLater(task, i);
+				}
+			}
+		}
+
+	private void createTaskConfigurationLater(final DEMacro.Task macroTask, final int taskIndex) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				AbstractTask task = mTaskFactory.createTask(mParentFrame, macroTask.getCode());
+				if (!task.isTaskWithoutConfiguration()) {
+					Properties configuation = task.showDialog(null, false);
+					if (task.isStatusOK())
+						macroTask.setConfiguration(configuation);
+					else
+						deleteTask(taskIndex);
+					}
+				}
+			} );
+		}
+
+	private AbstractTask createTask(String taskName) {
+		return mTaskFactory.createTask(mParentFrame, ConfigurableTask.constructTaskCodeFromName(taskName));
+		}
+
+	private void showPopupMenu(int x, int y, int taskIndex) {
+		if (taskIndex != -1) {
+			JPopupMenu popup = new JPopupMenu();
+
+			String taskName = (String)mList.getModel().getElementAt(taskIndex);
+			if (!createTask(taskName).isTaskWithoutConfiguration()) {
+				JMenuItem item1 = new JMenuItem("Edit Task...");
+		        item1.addActionListener(this);
+		        item1.setActionCommand(COMMAND_EDIT+taskIndex);
+		        popup.add(item1);
+		        popup.addSeparator();
+				}
+
+			JMenuItem item2 = new JMenuItem("Delete Task");
+	        item2.addActionListener(this);
+	        item2.setActionCommand(COMMAND_DELETE+taskIndex);
+	        popup.add(item2);
+
+	        if (mList.getSelectedValues().length > 1) {
+				JMenuItem item3 = new JMenuItem("Delete Selected Tasks");
+		        item3.addActionListener(this);
+		        item3.setActionCommand(COMMAND_DELETE_SELECTED);
+		        popup.add(item3);
+	        	}
+
+	        popup.show(mList, x, y);
+			}
+		}
+
+	private void enableItems() {
+		boolean enabled = (mMacroList.size() != 0);
+		mComboBoxMacro.setEnabled(enabled);
+		mList.repaint();
+		}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("New Macro...")) {
+			DEMacro macro = DEMacroEditor.addNewMacro(mParentFrame, null);
+			if (macro != null)
+				mComboBoxMacro.setSelectedItem(macro.getName());
+			return;
+			}
+		if (e.getActionCommand().equals("Duplicate Macro")) {
+			DEMacro macro = addNewMacro(mParentFrame, mCurrentMacro);
+			if (macro != null)
+				mComboBoxMacro.setSelectedItem(macro.getName());
+			return;
+			}
+		if (e.getActionCommand().equals("Rename Macro...")) {
+			String newName = JOptionPane.showInputDialog(mParentFrame, "New macro name:", mCurrentMacro.getName());
+			
+			if (newName != null && newName.length() != 0)
+				mCurrentMacro.setName(newName, mMacroList);
+
+			mParentFrame.getTableModel().setExtensionData(CompoundTableConstants.cExtensionNameMacroList, mMacroList);
+			mParentFrame.setDirty(true);
+			return;
+			}
+		if (e.getActionCommand().equals("Delete Macro...")) {
+			if (mComboBoxMacro.getSelectedIndex() == -1)
+				return;
+			int doDelete = JOptionPane.showConfirmDialog(this,
+					"Do you really want to delete the macro '"+mComboBoxMacro.getSelectedItem()+"'?",
+					"Delete Macro?",
+					JOptionPane.OK_CANCEL_OPTION);
+			if (doDelete == JOptionPane.OK_OPTION)
+				deleteCurrentMacro();
+			return;
+			}
+		if (e.getActionCommand().equals(COMMAND_DELETE_SELECTED)) {
+			deleteSelectedTasks();
+			return;
+			}
+		if (e.getActionCommand().startsWith(COMMAND_EDIT)) {
+			editTask(Integer.parseInt(e.getActionCommand().substring(COMMAND_EDIT.length())));
+			return;
+			}
+		if (e.getActionCommand().startsWith(COMMAND_DELETE)) {
+			deleteTask(Integer.parseInt(e.getActionCommand().substring(COMMAND_DELETE.length())));
+			return;
+			}
+		}
+
+	/**
+	 * Inquires for a macro name and adds a new macro with that name to the end of the
+	 * table model's macro list, causing the proper CompoundTableEvent to be fired.
+	 * @param frame
+	 * @param macroToBeCloned null or macro to be duplicated
+	 * @return new macro or null if user cancelled new macro naming dialog
+	 */
+	public static DEMacro addNewMacro(DEFrame frame, DEMacro macroToBeCloned) {
+		String suggestedName = (macroToBeCloned == null) ? "Untitled Macro" : "Copy of "+macroToBeCloned.getName();
+		String message = (macroToBeCloned == null) ? "Name of new empty macro" : "Name of duplicated macro";
+		String name = JOptionPane.showInputDialog(frame, message, suggestedName);
+		if (name == null || name.length() == 0)
+			return null;
+
+		@SuppressWarnings("unchecked")
+		ArrayList<DEMacro> macroList = (ArrayList<DEMacro>)frame.getTableModel().getExtensionData(CompoundTableConstants.cExtensionNameMacroList);
+
+		DEMacro macro = new DEMacro(name, macroList, macroToBeCloned);
+
+		if (macroList == null)
+			macroList = new ArrayList<DEMacro>();
+
+		int index = 0;
+		while (index<macroList.size() && macroList.get(index).getName().compareTo(macro.getName()) < 0)
+			index++;
+		macroList.add(index, macro);
+
+		frame.getTableModel().setExtensionData(CompoundTableConstants.cExtensionNameMacroList, macroList);
+
+		frame.setDirty(true);
+		return macro;
+		}
+
+	public void selectMacro(DEMacro macro) {
+		mComboBoxMacro.setSelectedItem(macro.getName());
+		}
+
+	private void deleteCurrentMacro() {
+		if (mComboBoxMacro.getItemCount() != 0) {
+			int index = mComboBoxMacro.getSelectedIndex();
+			mMacroList.remove(index);
+
+			// to trigger change events and update the macro lists in the menu
+			mMacroListChangedDisabled = true;
+			mParentFrame.getTableModel().setExtensionData(CompoundTableConstants.cExtensionNameMacroList, mMacroList);
+			mMacroListChangedDisabled = false;
+
+			mItemListenerDisabled = true;
+			mComboBoxMacro.removeItemAt(index);
+			if (mComboBoxMacro.getItemCount() != 0) {
+				if (index >= mComboBoxMacro.getItemCount())
+					index = mComboBoxMacro.getItemCount()-1;
+				mComboBoxMacro.setSelectedIndex(index);
+				resetListModel(mMacroList.get(index));
+				}
+			else {
+				resetListModel(null);
+				}
+			mItemListenerDisabled = false;
+
+			enableItems();
+
+			mParentFrame.setDirty(true);
+			}
+		}
+
+	private void deleteSelectedTasks() {
+		int[] index = mList.getSelectedIndices();
+		for (int i=index.length-1; i>=0; i--)
+			mCurrentMacro.removeTask(index[i]);
+		}
+
+	private void deleteTask(int taskIndex) {
+		mCurrentMacro.removeTask(taskIndex);
+		}
+
+	private void editTask(int taskIndex) {
+		if (taskIndex != -1) {
+			DEMacro macro = mMacroList.get(mComboBoxMacro.getSelectedIndex());
+			DEMacro.Task macroTask = macro.getTask(taskIndex);
+			AbstractTask task = mTaskFactory.createTask(mParentFrame, macroTask.getCode());
+			if (!task.isTaskWithoutConfiguration()) {
+				Properties newConfiguration = task.showDialog(macroTask.getConfiguration(), false);
+				if (newConfiguration != macroTask.getConfiguration()) {
+					macroTask.setConfiguration(newConfiguration);
+					mParentFrame.setDirty(true);
+					}
+				}
+			}
+		}
+
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		mParentFrame.setDirty(true);
+		}
+
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		mParentFrame.setDirty(true);
+		}
+
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		mParentFrame.setDirty(true);
+		}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if (!mItemListenerDisabled && e.getStateChange() == ItemEvent.SELECTED) {
+			int index = mComboBoxMacro.getSelectedIndex();
+			if (index != -1)
+				resetListModel(mMacroList.get(index));
+			}
+		}
+
+	@Override
+	public void macroNameChanged(DEMacro macro) {
+		boolean isSelected = (macro == mCurrentMacro);
+		Object selectedItem = mComboBoxMacro.getSelectedItem();
+		mComboBoxMacro.removeItemListener(this);
+		mComboBoxMacro.removeAllItems();
+		for (DEMacro m:mMacroList)
+			mComboBoxMacro.addItem(m.getName());
+		if (mComboBoxMacro.getItemCount() != 0)
+			mComboBoxMacro.setSelectedIndex(0);
+		if (isSelected)
+			mComboBoxMacro.setSelectedItem(macro.getName());
+		else
+			mComboBoxMacro.setSelectedItem(selectedItem);
+		mComboBoxMacro.addItemListener(this);
+		}
+
+	@Override
+	public void macroContentChanged(DEMacro macro) {
+		if (macro == mCurrentMacro) {
+			resetListModel(macro);
+			mParentFrame.setDirty(true);
+			}
+		}
+	}

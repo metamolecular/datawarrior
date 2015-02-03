@@ -1,0 +1,6 @@
+mkdir ./bin
+cp -r ./src/html ./bin/
+cp -r ./src/images ./bin/
+cp -r ./src/resources ./bin/
+javac -d ./bin -sourcepath ./src:./stubs -classpath ./lib/substance.jar:./lib/javaxVecmath.jar:./lib/WMF2Viewer.jar:./lib/jep.jar:./lib/commons-math-2.2.jar:./lib/batik-all.jar:./lib/xml-apis-ext.jar:./lib/opsin.jar:./lib/janino.jar:./lib/jumbo.jar src/com/actelion/research/datawarrior/DataWarriorLinux.java src/org/jmol/shape/*.java src/org/jmol/shapebio/*.java src/org/jmol/shapespecial/*.java src/org/jmol/shapesurface/*.java
+

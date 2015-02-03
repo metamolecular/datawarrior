@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title>Analysing Data</title>
+  <base href="../">
+  <link type="text/css" href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+<hr align="left" size="2" width="550">
+<h2><a name="DataAnalysis"></a>Analysing Data</h2>
+
+<hr align="left" size="2" width="550">
+<p><span class="keyword">DataWarrior</span> supports you with various means
+in the task of exploring and comprehending large datasets, be it with our without chemical structures.
+</p>
+<br>
+
+<h3><i><a name="Binning"></a>Binning Numerical Data</i></h3>
+<p>
+If the statistical distribution of all numerical values within one column is of concern,
+and if a histograms shall be displayed, then one needs to create a new column from the
+numerical values, which assigns a bin to each value, i.e. converts the numerical column
+into a special kind of category column.<br>
+The <span class="menu">Add Binned Column...</span> from the <span class="menu">Data</span> menu
+opens the following dialog, where the bin size and the exact location of the first bin can be
+defined, either by moving sliders or by typing in the desired values. A histogram preview shows how
+all rows are distributed among the bins with the current settings.</p>
+<p align="center"><img src="help/img/analysis/binning.jpeg"></p>
+<p><center><i>Binning dialog and histogram view from created new column.</i></center></p>
+</p>
+<br>
+
+<h3><i><a name="JEP"></a>Calculating A New Column From An Expression</i></h3>
+<p>
+<p>Often some columns of a dataset contain alphanumerical data, which if combined together,
+or if converted by a calculation or in some other way, would make it available for filtering,
+view adaption or other purposes. Examples would be the calculation of a ratio between two column,
+doing a conditional number conversion depending on an objects category or calculating a fitness
+value from other properties.</p>
+For calculating a new column from existing column values <span class="keyword">DataWarrior</span>
+has built in the open source expression parser JEP. It lets you define an arithmetical, logical
+or textual expression from constants, operators (+, -, *, >, &, !, ==, etc.), functions as sin(),
+sqrt(), if(), contains(), etc. and variables that represent data from other columns.
+In addition to the standard functions, <span class="keyword">DataWarrior</span>
+has some special functions defined to calculate molecule similarities, ligand efficiencies,
+or occurance frequencies of cell values.
+To define and evaluate a new expression choose <span class="menu">Add Calculated Values...</span>
+from the <span class="menu">Data</span> menu. When typing in a formula you don't need to type variable names.
+You rather should select the column name from the selection in the dialog and click
+<span class="menu">Add Variable</span>. This ensures correct spelling, especially since some column names
+are slightly modified to avoid syntax errors when the expression is parsed.
+The <a href="help/../jep.html">Help</a> button opens a window explaining the expression syntax,
+all operators and available functions.</p>
+<br>
+
+<h3><a name="PCA"></a>Principal Component Analysis</h3>
+
+<p><span class="keyword">The Principal Component Analysis</span>
+(PCA) is a widely used technique to convert a large number of
+highly correlated variables into a smaller number of less correlated variables. De-facto it does
+a coordinate transformation and re-positions the first axis of the coordinate system such that it perceives
+the maximum possible variance of the multidimensional data. Then the second axis is positioned orthogonal
+to the first one such that it perceives the maximum possible variance of the remaining dimensionality.
+The third axis is again positioned orthogonal to the first two also maximizing the perceived variance
+of the remaining data and so forth. In reality, to not overvalue those dimension with the highest numerical
+values, <i>DataWarrior</i> normalizes and centers the values of every input dimension before applying
+the coordinate transformation.</p>
+
+<p>Often the first dimensions (or components) of a PCA cover much of the variability of the data.
+This is because in reality many dimensions of multi-dimensional data are often highly correlated.
+In chemical data sets, for instance, carbon atom count, ring count, molecular surface, hetero atom count
+are all highly correlated with the molecular weight and therefore almost redundant information.
+Often the first two or three dimensions taken from a PCA can be used to position the objects on a plane
+or in space such that clusters of similar objects can easily be recognized in the view.</p>
+
+<p align="center"><img src="help/img/analysis/pca.jpeg"></p>
+
+<p>Since many chemical descriptors are nothing else then binary or numerical vectors, one can
+consider the n dimensions of these vectors as n parameters of the data set. Therefore, the binary
+and SkeletonSpheres descriptors can be selected as parameters to the PCA. This allows to visualise
+chemical space, if the first calculated components are assigned to the axes of a coordinate system.
+In the example above a dataset of a few thousand Cannabinoid receptor antagonists from the ChEMBL database
+was used to calculate the first three principal components from the <span class="keyword">SkeletonSpheres</span>
+descriptor. These were assigned to the axes of a 3D-view. The dataset was clustered with the same descriptor
+joining compounds until cluster similarity reached 80%, forming more than 300 clusters.
+Marker colors were set to represent cluster numbers. The distinct areas of equal color are evidence
+of the chemical space separation that can be achieved by a PCA, even though the dataset consists of rather
+diverse structures.</p>
+<br>
+
+<h3><a name="SOM"></a>Self-Organizing Maps</h3>
+<p>
+A <span class="keyword">Self-Organizing Map</span> (SOM) also called
+<span class="keyword">Kohonen Map</span>
+is a popular and robust artificial neural network algorithm to organize objects based on object
+similarity. Typically, this organization happens in 2-dimensional space. For this reason SOMs
+can be used well to visualize the similarity relationsships of hundreds or thousands of
+objects of any kind. Historically, small SOMs (e.g. 10*10) were used in cheminformatics
+to cluster compounds by assigning similar compounds to the same neuron. A typical visualization
+showed the grid with every grid cell colored to represent number of cluster members or an
+averidge property value. In order to visualize individual compounds of the chemical space
+<i>DataWarrior</i> uses many more neurons and adds a sub-neuron resolution explained in the
+following.</p>
+
+<p>Similar to the PCA, the SOM algorithm uses multiple numerical object properties,
+e.g. of a molecule, which together define an object specific n-dimensional vector.
+The vector may either consist of numerical column values
+or - as with the PCA - it may be a chemical descriptor. These object describing vectors are called
+input vectors, because their values are used to train a 2-dimensional grid of equally sized,
+but independent reference vectors (also called neurons).<br>
+The goal of the training is to incrementally optimize the values of the reference vectors
+such that eventually
+<ul><li>every input vector has at least one similar counterpart in the set of reference vectors.</li>
+<li>adjacent reference vectors in the rectangular grid are similar to each other.</li></ul>
+The final grid of reference vectors should represent a rectangular area of smoothly changing
+property space, where every input vector can be assigned to a similar reference vector.</p>
+
+<p align="center"><img src="help/img/analysis/som.jpeg"></p>
+<p align="center"><i>Cannabinoid receptor antagonists on a SOM with 50x50 neurons</i></p>
+
+<p>The Cannabinoid receptor antagonists, which have been used in the PCA example, were
+arranged on a SOM considering the <i>SkeletonShperes</i> descriptor as similarity criterion.
+The background colors of the view visualize neighborhood similarity of adjacent neurons
+in landscape inspired colors. Blue to green colors indicate valleys of similar neurons,
+while yellow to orange areas show ridges of more abrupt changes of the chemical space
+between adjacent neurons. Colored markers are located above the background landscape
+on top of those neurons, which represent the compound descriptors best. This way very
+similar compounds huddle in same valleys, while slightly different cluster are separated
+by yellow ridges.<br>
+Please note that <i>DataWarrior</i> uses sub-neuron-resolution to position object on
+the final SOM. After assigning an object to the closest reference vector, any object's
+position is fine-tuned by the object's similarity to the adjacent neurons.</p>
+
+<p>Comparing the SOM to the PCA concerning their ability to visualize chemical space,
+SOMs have these advantages: SOMs use all available space, while PCAs leave parts of the
+available area or space empty. The SOM takes and translates exact similarity values,
+while the PCA uses two or three principal components only to separate objects and,
+therefore, may miss some distinction criteria. High compound similarity is translated
+well into close topological neighborhood on the SOM. However, vicinity on the SOM
+does not necessarily imply object similarity, because close neurons may be separated by
+ridges and represent different areas of the chemical space, especially if the number
+of reference vectors is low. One may also check how well individual objects match
+the reference vectors they are assigned to. For this purpose <i>DataWarrior</i>
+calculates for every row a <i>SOM_Fit</i> value, which is the square root of the
+dissimilarity between the row's input vector and the reference vector the row is
+assigned to. As a rule of thumb, <i>SOM_Fit</i> values below 0.5 are a good indication
+of a well separating SOM.</p>
+
+<p>The SOM algorithm is a rather simple and straightforward one. First the input vectors
+are determined and normalized to avoid distortions of different numerical scales.
+The number of values stored in each input vector equals the number of numerical columns
+selected or the number of dimensions of the chosen descriptor.
+Then a grid of n*n reference vectors is initialized with random numbers.
+The reference vectors have the same dimensionality as the input vectors.<br>
+Then a couple of thousand times the following procedure is repeated:
+In input vector is selected randomly. That reference vector is located, which
+is most similar to the input vector. This reference vector and the reference vectors in
+its circular neighborhood are modified to make them a little more similar to
+the selected input vector. The amount of the modification decreases with increasing
+distance from the central reference vector and it decreases with the number of
+modification rounds already done. This way a coarse grid structure is formed quickly,
+while the more local manifestation of fine-granular details takes the majority of the
+optimization cycles.</p>
+
+To create a SOM from any data set in <i>DataWarrior</i> select
+<span class="menu">Create...</span> from the <span class="menu">Self Organizing Map</span>
+submenu of the <span class="menu">Data</span> menu. The following dialog appears:
+
+<p align="center"><img src="help/img/analysis/somDialog.jpeg"></p>
+
+<p><b>Parameters used:</b>The columns selected here define the similarity criterion
+between objects or table rows. All values are normalized by the variance of the column.
+The normalized row values of all selected columns form the vector, which is used
+to calculate an euclidian similarity to other row's vectors. If a chemical
+descriptor is selected here, the SOM uses respective chemical similarities and,
+thus, can be used to visualize chemical space.</p>
+
+<p><b>Neurons per axis:</b>This defines the size of the SOM. As a rule of thumb
+the total number of neurons (square the chosen value) should about match the
+number of rows. A highly diverse dataset will require some more neurons, while
+a highly redundant combinatorial library will be fine with less.</p>
+
+<p><b>Neighbourhood function:</b>This selects the shape of the curve, which defines
+how the factor for neuron modification factor decreases with distance from the
+central neuron. The typical shape is a <span class="menu">gaussean</span> one,
+which usually causes smooth SOMs.</p>
+
+<p><b>Grow map during optimization:</b>Large SOMs take quite some time for the
+algorithm to finish. One way of reducing the time is to start out with a much smaller
+SOM and double the size of each axis three time during the optimization. If
+this option is checked, the map starts with one eightht of the defined neurons
+per axis.</p>
+
+<p><b>Create unlimited map:</b>If this option is checked, then the left edge neurons
+of the grid are considered to be connected to the respective right edge neurons
+and top edge neurons are considered to be connected to bottom edge neurons.
+This effectively converts the rectangular area to the surface of a torus,
+which has no edges anymore and, therefore, avoids edge effects during the
+optimization phase.</p>
+
+<p><b>Fast best match finding:</b>A large part of the calculation time is spent
+on finding the most similar neuron to a randomly picked input vector.
+If this option is checked, then best matching neurons are cached
+for every input vector and are used in later as best match searches as
+starting point. This assumes that a path with steadily increasing similarity
+exists from the previous best matchin neuron to the current one.</p>
+
+<p><b>Show vector similarity landscape in background:</b>After finishing the
+SOM algorithm, <i>DataWarrior</i> creates a 2-dimensional view displaying
+the objects arranged by similarity. If this option is checked, a background
+picture is automatically generated, which shows the neighbourhood similarity
+of the SOMs reference vectors in colors inspired by landscape. Blue, cyan, green,
+yellow, orange and red reflect an increasing dissimilarity between adjacent
+neurons. Markers in the same blue or green valley belong to rather
+similar objects.</p>
+
+<p><b>Use pivot table:</b>This option allows to pivot the data on the fly.
+Imagine a dataset where gene expression values have been determined for a number
+of genes in some different tissues. The results are stored in three columns
+with gene names, expression values, and tissue types. As
+<span class="menu">Group by:</span> column you would select <i>Tissue Type</i>
+and as <span class="menu">Split data by:</span> column you would select <i>Gene Name</i>.
+<i>DataWarrior</i> would then convert the table layout to yield one <i>Tissue Type</i> and
+one additional column with expression values for every gene name.
+The generated SOM would then show similarities between tissue types
+considering expression values of multiple genes.</p>
+
+<p><b>Save file with SOM vectors:</b> Use this option to save all reference
+vectors to a file once the optimization is done. Such a file can be used
+later to map objects from a different dataset to the same map, provided
+that they contain the properties or descriptor used to train the SOM.
+One might, for instance, train a large SOM from many diverse compounds
+containing both, mutagenic and non-mutagenic structures. If one would use
+the SOM file to later map a commercial screening library, one could merge
+both files and show toxic and non toxic areas by coloring the background
+of a 2D-view accordingly. The foreground might show the compounds of the
+screening library distributed in toxic and non-toxic regions.</p>
+
+<br>
+<p align="center">Continue with <a href="help/chemistry.html">Chemical Structures</a>...</p>
+<br>
+</body>
+</html>

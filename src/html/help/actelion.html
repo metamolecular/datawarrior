@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <title>Actelion Databases</title>
+  <base href="../">
+  <link type="text/css" href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+<hr align="left" size="2" width="550">
+<h2><b><a name="DatabaseAccess"></a>Accessing Databases</b></h2>
+
+<hr align="left" size="2" width="550">
+<p>One important aspect of <span class="keyword">DataWarrior</span> is its direct access to various
+of Actelion's research databases. Queries on these databases may be
+composed by specifying search criteria in dedicated dialogs.
+Depending on the database the search criteria may consist
+of simple criteria as Actelion numbers,
+project names, test name, lab journal numbers, experiment dates or
+you may define activity thresholds in certain assays or even specify a
+certain substructure that retrieved hits are required to contain.<br>
+For common search tasks in the <span class="keyword">OSIRIS database</span>, which contains
+Actelion's inhouse compounds and their biological assay results, one
+may store queries in the database for later reuse. Optionally, stored
+queries may be defined as public and therefore wil be available to
+other users as well. Database queries may be extended by adding a <i>template</i>.
+After a query has been executed, which had a template attached,
+predefined views will be generated, labels attached, filters applied,
+etc.<br>
+OSIRIS queries may also be saved in a local query file. Attaching query
+files to an e-mail allows sharing results within the company with
+high
+degree of confidentiality. These files
+always contain a template therefore will automatically reconstruct
+all settings after running the query. Query files can only be
+run within the Actelion network by an authorized user having an
+account to logon to the database. They are very small and do not
+contain any data themselves. Furthermore, running a database query
+ensures always to work on up-to-date information.</p>
+<br>
+<h3><i><a name="OsirisCompounds"></a>OSIRIS Compound Information</i></h3>
+
+<p>This interface permits to query the database for chemical compounds that were 
+  once registered in the OSIRIS database and therefore have an Actelion number. 
+  Selecting <span class="menu">Retrieve Chemical Data...</span> 
+  from the <span class="menu">Database / OSIRIS Database</span> 
+  menu opens a dialog where you can specify various search criteria as substructure 
+  or similarity search, registration project, registration date, etc. If you intend 
+  to restrict a search to batches from a specific chemist or producer, then please 
+  specify his or her Oracle login ID rather than a full name. If you want different 
+  batches with the same structure to be merged into one row, then you need 
+  to check <span class="menu">Group Results By Chemical Structure</span>.</p>
+<p align="center"><img src="help/img/actelion/OsirisChemQuery.jpg"></p>
+<p>If your data contains rows with Actelion numbers, chemical lab journals 
+  or Actelion screening library plate positions, but no chemical structures, then 
+  you may retrieve the chemical structures from the database by selecting <span class="menu">Retrieve 
+  Structures</span> from the <span class="menu">Database / OSIRIS 
+  Database</span> menu.</p>
+<p>Imagine your current DataWarrior document contains some chemical structures 
+  and you would like to know if any of these structures are already registered 
+  in the OSIRIS database. You may achieve this with <span class="menu">Find 
+  Matching Structures...</span> from the <span class="menu">Database 
+  / OSIRIS Database</span> menu, which performs an exact structure search with 
+  every one of your compounds against the OSIRIS database and retrieves the associated 
+  Actelions numbers into a new column.</p>
+<br><br>
+
+<h3><i><a name="OsirisQueries"></a>OSIRIS Biological Query Builder</i></h3>
+
+<p> This interface allows the user to query the database to retrieve project related 
+  information. From the <span class="menu">Database</span> menu select <span class="menu">Osiris Database / Retrieve 
+  Biological Data</span>. If you are not connected yet, you will be prompted to enter 
+  your user name and your password to logon to the database. Then, use the <span class="keyword">OSIRIS 
+  Database Query</span> dialog to define your search.</p>
+
+<p align="center"><img src="help/img/actelion/OsirisDatabaseQuery.jpg" alt="Osiris Database Query" border="0"></p>
+To define your query perform these steps:
+<br>
+
+<li>Under the <span class="menu">Retrieval Columns</span> section, select a project.</li>
+
+<li>Then, select an assay from the updated assay menu. </li>
+
+Note that the total numbers of available results are given in brackets after the 
+assay names in the assay menu.<br>
+
+<li>Select a <span class="menu">Result Column</span> (parameter) and click the 
+<span class="menu">Add</span> button.</li>
+
+Your selection will appear as an item in the column list on the right hand side 
+of the <span class="menu">Retrieval Columns</span> section. 
+<li>Repeat the last three steps until all result columns of interest are listed.</li>
+
+<p>In the <span class="menu">Search Criteria</span> section you may define additional criteria, e.g. 
+  a biological lab journal, a date limit, etc. Moreover, you may add assay specific 
+  criteria, e.g. retrieve only compounds, that were active in one assay, but inactive 
+  in another.</p>
+<p>Furthermore, if your current DataWarrior document contains selected <b>Actelion 
+  numbers</b> or <b>Chem Lab Journal/External References</b>, you may retrieve 
+  results for these compounds only.</p>
+<p>Whatever search criteria you define, DataWarrior will first create an internal 
+  list of Actelion batches and samples which satisfy these criteria. In a second 
+  step it will retrieve <b>all</b> results of these compounds that fit into the 
+  defined retrieval columns. This has two implications: The search criteria are 
+  independent from the retrieval columns. Thus, you may retrieve assay results 
+  of compounds that are active in a different assay. Also, you may find results 
+  that don't meet the original search criteria, e.g. if a batch was tested more 
+  than once in a certain assay and at least one result meets the criteria then 
+  you will see all results of this batch in the specified assay.<br>
+</p>
+<p>Once the query is defined you may just run it by clicking the <span class="menu">OK</span> button 
+  or you may save it <b>in the database</b> for later reuse by clicking on the 
+  <span class="menu">Save...</span> button. A dialog opens where you need to specify a name for your 
+  query. In addition you may define your query public, which will allow other 
+  users to see and run your query.</p>
+<p></p>
+<p>If you want to automatically apply certain view and filter settings to the 
+  data after running a stored query, then you need to attach a Template to that 
+  query. In order to do so, you need to run the query once, create and modify 
+  views and filters, so that DataWarrior presents your data to your liking. Then 
+  select <span class="menu">Assign Template To Query...</span> from the 
+  <span class="keyword">OSIRIS Database</span> menu, 
+  select your query name and click <span class="menu">OK</span>.</p>
+<p>Do not confuse an <span class="keyword">Osiris Query</span> with an 
+  <span class="keyword">Osiris Query File</span> (see below)!!!
+</p>
+<br><br>
+<h3><i><a name="OsirisQueryFile"></a>Osiris Query Files</i></h3>
+
+<p> An <span class="keyword">Osiris Query File</span> is the preferred way of sharing your new data 
+  within the company. It is a small parameter file containing no information about 
+  your results (thus very secure) but will retrieve information from the database 
+  when you open it with DataWarrior. It will also reconstruct all view and filter 
+  settings according to your formatting.</p>
+
+<b>How to create an <span class="keyword">Osiris Query File?</span></b><br>
+
+<p> First, define a query as describe before and retrieve the data form the database.<br>
+  Format the results for the recipients as meaningful as possible by:<br>
+</p>
+<ul>
+  <li>Get rid of 2D and 3D-views (right mouse-click on view name and select <span class="menu">Close 
+    View</span>) if you don't use them to present certain aspects of your data.</li>
+  <li>Rename views where appropriate (right mouse-click on view name and select 
+    <span class="menu">Rename View...</span>).</li>
+  <li>Use short meaningful column aliases as "IC50hPlasma" rather than "IC50hPlasma.Concentration" 
+    (this can be done in the <span class="keyword">Table View</span> with a right mouse-click on the 
+    column header and selecting <span class="menu">Set Column Alias...</span>).</li>
+  <li>Add labels to the <span class="keyword">Structure View</span> showing for example the Actelion 
+    No and important numerical data.</li>
+</ul>
+<p>Then, from the <span class="menu">File</span> menu, select <span class="menu">Save Special... / OSIRIS 
+  Query</span>. Choose an meaningful name for the query file like "Recent Results 
+  Assay xxx.dwaq".</p>
+<p> When the recipient of such a query file launches it, he will first be asked 
+  for the Osiris database user-ID and password. Afterwards the query is processed 
+  and the data presented as you have defined it. The following picture illustrates 
+  this. </p>
+
+<p><b>Tip!:</b> If you need to report new assay results on a regular basis, then 
+  you may construct a query that retrieves the most recent results and send the 
+  same unchanged query file to your customers whenever new results were uploaded 
+  to the database. Therefore select in the Osiris Database Query dialog, under 
+  the option <span class="menu">Experiment/Calculation Date</span> the criteria 
+  <span class="menu">most recent only</span>.
+</p><br><br>
+<h3><i><a name="Inventory"></a>Chemicals Inventory</i></h3>
+<p> The menu item <span class="menu">Chemicals Inventory / Retrieve Data...</span> opens a dialog 
+  that lets you chemicals and associated data from Actelion Chemicals Inventory 
+  database, which contains in-house chemicals and their locations. You may search 
+  by structure, location, registration user or date, and restrict result to empty 
+  or not-empty bottles.</p>
+<p>Provided you have a list of compounds, in order to check which of the compounds 
+  are currently available in the Inventory you may select <span class="menu">Find 
+  Matching Structures...</span> from the <span class="menu">Database 
+  / Chemicals Inventory</span> menu, which performs an exact structure search 
+  with every one of your compounds against the Inventory and retrieves Inventory 
+  barcodes and the bottle locations of found chemicals into new columns of your 
+  data.<br>
+  <br>
+</p>
+
+<h3><i><a name="ProteinXtalDB"></a>The
+Protein Crystallography Database</i></h3>
+
+<p> Actelion's protein crystallography database houses experimental conditions 
+  and parameters of our attempts to crystallize proteins in order to obtain high 
+  resolution x-ray structures. Some observations are accompanied by photos of 
+  promising crystals. To access this database select <span class="menu">Retrieve Protein Xtal 
+  data...</span> from the Database menu. A dialog opens where you first need to select 
+  a retrieval target among plate observation, experimental conditions, or plate 
+  data. Then you should specify some search criteria and you may change the default 
+  selection of columns to retrieve, which is specific to your retrieval target. 
+</p>
+<p> After retrieving observations one column is named '#image#'. This contains 
+  a name of the observation image, if available. In this case the <span class="keyword">Detail View</span> 
+  or <span class="keyword">Form View</span> display the associated image, of which you may enlarge a 
+  section the see more details.</p>
+
+<br>
+
+<i>Example:</i><br>
+<table class="wspace">
+  <tr>
+    <td class="wspace"><img src="help/img/actelion/XtalLowResPicture.jpg"></td>
+    <td class="wspace">On the picture, define a rectangular area to enlarge by clicking and dragging 
+      with the mouse.</td>
+  </tr>
+  <tr>
+    <td class="wspace"><img src="help/img/actelion/XtalHighResPicture.jpg"></td>
+    <td class="wspace">As soon as you release the mouse, DataWarrior will retrieve an higher 
+      resolution picture and display the selected area within the available space.</td>
+  </tr>
+</table>
+<p><br>
+  <br>
+</p>
+
+<h3><i><a name="ExpressionDB"></a>The
+Gene Expression Database</i></h3>
+
+<p>
+Actelion's in-house gene expression database comprises gene
+expression values of various genes in various tissues.<br>
+
+To access Gene Expression Data, select from the <span class="menu">Database</span> menu <span class="menu">
+Retrieve Gene Expression Data</span>.
+<br><br>
+
+<h3><a name="CCDB"></a>Commercial Chemicals Database</h3>
+<p>Actelion maintains a dedicated database of commercially available chemicals, being comparable
+to MDL's ACD or CambridgeSoft's ACX databases. You may run a substructure or similarity search 
+or/and limit your search to a specific list of supplier. If you don't specify any search criteria
+you will retrieve the entire database with hundred thousands of rows.</p>
+<p align="center"><img src="help/img/actelion/CCQuery.jpg"></p>
+<br><br>
+
+<h3><a name="HTSDB"></a>Screening Compounds Database </h3>
+<p>Actelion maintains a dedicated server and database with the structures of commercially 
+  available screening compounds. You may run substructure or similarity search 
+  against this database by specifying a fragments or molecule's structure, 
+  respectively. Alternatively, you may also select some structures of an open 
+  DataWarrior document and perform a similarity search of all these structures 
+  in one run. This might be useful, for instance, to check if there are screening 
+  compounds commercially available that are similar to any of the lead compounds 
+  of a certain project.</p>
+<p align="center"><img src="help/img/actelion/HTSQuery.jpg"></p>
+
+</body>
+</html>
