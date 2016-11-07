@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class NastyFunctionDetector {
 	public static final String[] cNastyFunctionsUnknown = null;
 
-	public static final String sNastyFunction[][] = {
+	public static final String sNastyFunction[][] = { // TODO: ADD mono-halogenated silanes 
 		{ "sGP@LdbKT`NiFrVceCAhXKg@HAEXR@", "polar activated DB" },
 		{ "sGP@DjVePGVCELT\\xA@Hn\\@`DUVHd", "twice activated DB" },
 		{ "QM@HvAuCZHmg@HABTaDXeYVB@", "acyl-halogenide type" },
@@ -32,8 +32,8 @@ public class NastyFunctionDetector {
 		{ "QM@HzAaEjcJXeX", "prim. alkyl-bromide/iodide" },
 		{ "qC`@Qz`MeEFYLRl@", "sec./tert. alkyl-bromide/iodide" },
 		{ "qCaPQ@HRmhCjY@", "alkyl sulfonate/sulfate type" },
-		{ "sJQ`@bdjt`H", "anhydride" },
-		{ "sJXA@IczhA@", "quart. ammonium" },
+		{ "sJQ`@bdjt`H", "acid anhydride" },
+		{ "sJXA@IczhA@", "quat" },
 		{ "qCpB@SGZ@`", "tert. immonium" },
 		{ "`Hi@`", "carbenium" },
 		{ "qCqAPJRnRYhCjZ@", "aromatic nitro" },
@@ -46,7 +46,7 @@ public class NastyFunctionDetector {
 		{ "QMPRI^cxD", "diazo" },
 		{ "sJT@@Te^lA@", "1,1-dinitrile" },
 		{ "QMHAIhFBTYk`DO@HQ@", "formaldehyde aduct" },
-		{ "QO@HyjAleFTxA@", "oxiran/aziridine" },
+		{ "QO@HyjAleFTxA@", "epoxide/aziridine" },
 		{ "QMPBchFBUi@", "hydrazine" },
 		{ "QM`AITFLypB@P", "isocyanate type" },
 		{ "`H@[T[|A`xABPtCAp|@bHrBcDk@", "unwanted atom" },
@@ -54,7 +54,7 @@ public class NastyFunctionDetector {
 		{ "qCrAPCiJSS@P", "nitrone" },
 		{ "QMhHRVAmH", "nitroso" },
 		{ "qCc@AYIj`H", "orthoester/acid" },
-		{ "RFHEFB", "peroxo" },
+		{ "RFHEFB", "organic peroxide!" },
 		{ "sGY@HDiViPFrVbcg@HAEs`D@`", "N-acyloxy-amide" },
 		{ "qC`@Qv`LTlbLRlvQFIV@", "1,1-dihalo-alkene" },
 		{ "qC`@IRtDVJVQFIV[HcDk@", "1,2-dihalo-alkene" },
