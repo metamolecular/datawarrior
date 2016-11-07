@@ -26,17 +26,17 @@ public class NastyFunctionDetector {
 	public static final String sNastyFunction[][] = { // TODO: ADD mono-halogenated silanes 
 		{ "sGP@LdbKT`NiFrVceCAhXKg@HAEXR@", "polar activated DB" },
 		{ "sGP@DjVePGVCELT\\xA@Hn\\@`DUVHd", "twice activated DB" },
-		{ "QM@HvAuCZHmg@HABTaDXeYVB@", "acyl-halogenide type" },
+		{ "QM@HvAuCZHmg@HABTaDXeYVB@", "Acyl halide!" },
 		{ "RFDDQFCELbLRlfxACpBDRl@", "Cl,Br,I on N,O,P,S,Se,I" },
 		{ "qC`PBHRVdCjQkI`", "allyl/benzyl chloride" },
-		{ "QM@HzAaEjcJXeX", "prim. alkyl-bromide/iodide" },
+		{ "QM@HzAaEjcJXeX", "primary alkyl-bromide/iodide" },
 		{ "qC`@Qz`MeEFYLRl@", "sec./tert. alkyl-bromide/iodide" },
-		{ "qCaPQ@HRmhCjY@", "alkyl sulfonate/sulfate type" },
+		{ "qCaPQ@HRmhCjY@", "alkyl sulfonate/sulfate" },
 		{ "sJQ`@bdjt`H", "acid anhydride" },
-		{ "sJXA@IczhA@", "quat" },
+		{ "sJXA@IczhA@", "quat salt" },
 		{ "qCpB@SGZ@`", "tert. immonium" },
 		{ "`Hi@`", "carbenium" },
-		{ "qCqAPJRnRYhCjZ@", "aromatic nitro" },
+		{ "qCqAPJRnRYhCjZ@", "nitroarene" },
 		{ "qCh@CIKTAaARoSP", "1,2-diamino-aryl" },
 		{ "sJT@@TeZhA``ZJH", "1,3-diamino-aryl" },
 		{ "sGT@ATeVj`FBEihl", "1,4-diamino-aryl" },
@@ -48,7 +48,7 @@ public class NastyFunctionDetector {
 		{ "QMHAIhFBTYk`DO@HQ@", "formaldehyde aduct" },
 		{ "QO@HyjAleFTxA@", "epoxide/aziridine" },
 		{ "QMPBchFBUi@", "hydrazine" },
-		{ "QM`AITFLypB@P", "isocyanate type" },
+		{ "QM`AITFLypB@P", "organic isocyanate" },
 		{ "`H@[T[|A`xABPtCAp|@bHrBcDk@", "unwanted atom" },
 		{ "`IoAHD", "phosphonium" },
 		{ "qCrAPCiJSS@P", "nitrone" },
@@ -60,10 +60,10 @@ public class NastyFunctionDetector {
 		{ "qC`@IRtDVJVQFIV[HcDk@", "1,2-dihalo-alkene" },
 		{ "`Jd`]T", "pyrylium" },
 		{ "qCbPPNBRt`ZrP", "silylenol-ether" },
-		{ "qCh@BISJAsD", "dimethylene-hydrazine" },
+		{ "qCh@BISJAsD", "ketazine" },
 		{ "QMPARZAeS~j@", "methanediamine" },
 		{ "HaFD`Bs`BLdTTIUSRp@`", "limit! methylene-thiazolidine-2,4-dione" },
-		{ "sOtHLPDISOkSM@LHP", "limit! thiazol-2-ylamine" },
+		{ "sOtHLPDISOkSM@LHP", "2-aminothiazole" },
 		{ "sGU@DPdsmR@rb\\", "acyl-hydrazone" },
 		{ "qCp@AJV`LIIROFIFC`@", "imine/hydrazone of aldehyde" },
 		{ "HeUD@BxIrJJKPlKTmL@MXhP", "2,3-diamino-quinone" },
@@ -73,7 +73,7 @@ public class NastyFunctionDetector {
 		{ "sJQ@@dls@LX\\bLRl@", "2-halo-enone" },
 		{ "sJQ@@djsAEXpyDXeX", "3-halo-enone" },
 		{ "qCiASARUrSM@P", "N-nitro" },
-		{ "qCpPHABSM@XsHp\\@", "thio-amide/urea" } };
+		{ "qCpPHABSM@XsHp\\@", "thiourea" } };
 
 	private static StereoMolecule[]	sFragmentList;
 	private static int[][]			sIndexList;
